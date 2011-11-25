@@ -18,7 +18,8 @@ if there is already one that displays the same directory."
   :type 'boolean)
 
 (easy-mmode-defmap gitsum-diff-mode-shared-map
-  '(("A" . gitsum-amend)
+  '(("a" . gitsum-add)
+    ("A" . gitsum-amend)
     ("c" . gitsum-commit)
     ("g" . gitsum-refresh)
     ("k" . gitsum-kill-dwim)
@@ -64,7 +65,7 @@ A numeric argument serves as a repeat count."
     (erase-buffer)
     (insert "# Directory:  " default-directory "\n")
     (insert "# Use n and p to navigate and k to kill a hunk.  u is undo, g will refresh.\n")
-    (insert "# Edit the patch as you please and press 'c' to commit.\n\n")
+    (insert "# Edit the patch as you please and press 'a' to add to the index, or 'c' to commit.\n\n")
     (let ((diff (shell-command-to-string (concat "git diff " arguments))))
       (if (zerop (length diff))
           (insert "## No changes. ##")
@@ -89,6 +90,11 @@ A numeric argument serves as a repeat count."
             (forward-line -2)
             (when (looking-at "^--- ")
               (delete-region here (point)))))))))
+
+(defun gitsum-add ()
+  "Add the patch to the index as-is."
+  (interactive)
+  (shell-command-on-region (point-min) (point-max) "git apply --cached"))
 
 (defun gitsum-commit ()
   "Commit the patch as-is, asking for a commit message."
